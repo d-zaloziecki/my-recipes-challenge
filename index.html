@@ -31,7 +31,35 @@
     <div class="recipes row">
     </div>
 
+    <script id="recipe-template" type="text/x-handlebars-template">
+        
+        {{#each allRecipes}}
+        <div class="recipe col-md-6  offset-md-3 img-fluid shadow" data-id="{{id}}"> 
+            <h4 class="text-capitalize font-italic text-center"> {{name}}  </h4> 
+            <img class="recipe-img" src='{{image}}'/>
+            <hr>
+            <h5 class="font-italic font-bold text-center">ingredients</h5>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="add-ingredients input-group-text" id="basic-addon3">Add Ingredients</span>
+                </div>
+                <input type="text" class="form-control addIngridient" id="basic-url" aria-describedby="basic-addon3">
+                
+            </div>
+            <ul class="ingredients">
+                {{#each ingredients}}
+                <li class='ingridient' data-id='{{id}}'>
+                    <img class='removeIng'> {{text}}
+                </li>
+                {{/each}}
+            </ul>
+            <button class="btn btn-danger remove-recipe" type="button">Remove recipe</button>
+        </div>
+        {{/each}}
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.4/handlebars.js"></script>
     <script src="script.js"></script>
 </body>
 

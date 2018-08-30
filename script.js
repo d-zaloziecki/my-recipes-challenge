@@ -1,95 +1,92 @@
-var RecipeApp = function () {
-
-    var recipes = [
-        // { 
-        //     id: 1,
-        //     name: 'Best Chicken Soup!', 
-        //     image: 'https://static01.nyt.com/images/2016/11/29/dining/recipelab-chick-noodle-still/recipelab-chick-noodle-still-master675.jpg',
-        //     ingredients: [
-        //         { name: 'whole chicken' },
-        //         { name: 'medium carrots'},
-        //         { name: 'onions' },
-        //     ] 
-        // }
-    ];
-
-    var $recipes = $('.recipes');
-
-    //id's for recipes
-    var recId = 2;
-
-    //id's for ingredients
-    var ingId = 0;
-
-    var createRecipe = function(name, image){
-        var recipe = {
-            name: name,
-            image: image, 
-            ingredients: [],
-            id: recId
-        };
-
-        //keeps recipe ids unique 
-        recId ++; 
-
-        recipes.push(recipe);
-    };
-
-    var createIngredients = function(){
-        //add code
-    };
-
-    var _getIngredientsHTML = function(recipe){
-        var recipesHTML = "";
-
-        //add code
-        return recipesHTML;
-    };
-
-    var renderRecipes = function () {
-        //empty recipes div
-        $recipes.empty();
-
-        for(var i = 0; i < recipes.length; i ++){
-            //current recipe in iteration
-            var recipe = recipes[i];
-
-            //return HTML for all ingredients
-            var ingredients = _getIngredientsHTML(); //add code
-
-            $recipes.append(
-                '<div class="recipe col-md-6  offset-md-3 img-fluid shadow" data-id="' + recipe.id + '">' + 
-                    '<h4 class="text-capitalize font-italic text-center">' + recipe.name + '</h4>' +
-                    '<img class="recipe-img" src="' + recipe.image + '"/>' +
-                    '<hr>' +
-                    '<h5 class="font-italic font-bold text-center">ingredients</h5>' +
-                    '<div class="input-group mb-3">' +
-                        '<div class="input-group-prepend">' +
-                            '<span class="add-ingredients input-group-text" id="basic-addon3">Add Ingredients</span>' +
-                        '</div>' + 
-                        '<input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">' +
-                        
-                    '</div>' +
-                    '<ul class="ingredients">' + ingredients + '</ul>'+
-                '</div>'
-            );
-        }
-    };
-
+const RecipeApp = function () {
     return {
-        createRecipe: createRecipe,
-        renderRecipes: renderRecipes,
-        // createIngredients: createIngredients,
-    }
+        recipes: [
+
+        ],
+
+        $recipes: $('.recipes'),
+
+        //id's for recipes
+        recId: 2,
+
+        //id's for ingredients
+        ingId: 0,
+
+        _getRecipeById: function (recipeId) {
+            for (let i = 0; i < this.recipes.length; i++) {
+                if (this.recipes[i].id === recipeId) {
+                    return this.recipes[i];
+                }
+            }
+        },
+
+        _getIngById: function (recipe, ingredientId) {
+            for (let i = 0; i < recipe.ingredients.length; i++) {
+                if (recipe.ingredients[i].id === ingredientId) {
+                    return recipe.ingredients[i];
+                }
+            }
+        },
+
+        createRecipe: function (name, image) {
+            let recipe = {
+                name: name,
+                image: image,
+                ingredients: [],
+                id: this.recId
+            };
+
+            //keeps recipe ids unique 
+            this.recId++;
+
+            this.recipes.push(recipe);
+        },
+
+        createIngredients: function (ingridientText, recipeId) {
+            let ingridient = {
+                text: ingridientText,
+                id: this.ingId
+            };
+            this.ingId++;
+
+            let wantedRecipe = this._getRecipeById(recipeId);
+            wantedRecipe.ingredients.push(ingridient);
+        },
+
+        removeRecipe: function (recipeId) {
+            let recipeToBeRemoved = this._getRecipeById(recipeId);
+            this.recipes.splice(this.recipes.indexOf(recipeToBeRemoved), 1);
+        },
+
+        removeIng: function (ingridientId, recipeId) {
+            let recipe = this._getRecipeById(recipeId);
+            let ingridient = this._getIngById(recipe, ingridientId);
+            let recipeIngridients = this.recipes[this.recipes.indexOf(recipe)].ingredients;
+
+            recipeIngridients.splice(recipeIngridients.indexOf(ingridient), 1);
+        },
+
+        renderRecipes: function () {
+            //empty recipes div
+            this.$recipes.empty();
+
+            var source = $('#recipe-template').html();
+            var template = Handlebars.compile(source);
+            var newHTML = template({ allRecipes: this.recipes });
+
+            // append our new html to the page
+            this.$recipes.append(newHTML);
+        },
+    };
 };
 
-var app = RecipeApp();
+const app = RecipeApp();
 
 
 //--------EVENTS
 
 //add a recipe
-$('.add-recipe').on('click', function(){
+$('.add-recipe').on('click', function () {
     //collect input text
     var name = $('#recipe-name').val();
     var image = $('#recipe-image').val();
@@ -99,3 +96,27 @@ $('.add-recipe').on('click', function(){
     app.renderRecipes();
 });
 
+$('.recipes').on("keyup", ".addIngridient", function (event) {
+    event.preventDefault();
+    if (event.keyCode === 13) {
+        let ingridientText = $(this).val();
+        let recipeId = $(this).closest('.recipe').data().id;
+        app.createIngredients(ingridientText, recipeId);
+        app.renderRecipes();
+    }
+});
+
+$('.recipes').on("click", '.remove-recipe', function () {
+    let recipeId = $(this).closest('.recipe').data().id;
+    app.removeRecipe(recipeId);
+    app.renderRecipes();
+})
+
+
+$('.recipes').on("click", ".removeIng", function () {
+    let ingridientId = $(this).closest('.ingridient').data().id;
+    let recipeId = $(this).closest('.recipe').data().id;
+
+    app.removeIng(ingridientId, recipeId);
+    app.renderRecipes();
+})

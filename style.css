@@ -12,3 +12,29 @@
 .ingredients{
     margin-left: 30px;
 }
+
+.ingredients, .ingridient {
+    list-style-type: none;
+}
+
+.ingridient {
+    padding-left: 0;
+    margin:10px ;
+    margin-left: 0;
+}
+
+.ingridient .removeIng {
+    margin-right: 2em;
+    background-image: url("https://image.flaticon.com/icons/svg/114/114987.svg");
+    width: 30px;
+    height: 30px;
+    border: none;
+}
+
+.ingridient .removeIng:hover{
+    background-image: url("https://image.flaticon.com/icons/svg/527/527494.svg");
+}
+
+.remove-recipe{
+    margin: 15px;
+}
